@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMOREHAUS - Willkommen</title>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Great+Vibes&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background: #111; }
+    .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .scrollbar-hide::-webkit-scrollbar { display: none; }
+    .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+/* ===== LUCIDE ICON REPLACEMENTS ===== */
+const MapPin = ({size=24, className=""}) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+);
+const Phone = ({size=24, className=""}) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+);
+const Clock = ({size=24, className=""}) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+);
+const ShieldCheck = ({size=24, className=""}) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+);
+const ArrowRight = ({size=24, className=""}) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+);
+const Menu = ({size=24, className=""}) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+);
+const X = ({size=24, className=""}) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+);
+const ChevronDown = ({size=24, className=""}) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m6 9 6 6 6-6"/></svg>
+);
+const Sparkles = ({size=24, className=""}) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/></svg>
+);
+
+/* ===== DAMEN DATA (abgeglichen mit Originalseite) ===== */
+const damenData = [
+  {
+    id: 1, name: "Gaby", age: 35, origin: "Ungarn", height: "165 cm", bust: "85 C", hair: "Blond lang",
+    konfektion: "40", tattoos: "Ja", piercings: "Nein", intimrasur: "Rasiert",
+    languages: "Deutsch, Englisch",
+    anwesend: true,
+    quote: "stehst du auf mollige Frauen mit geilem Service, dann bist du bei mir richtig",
+    subquote: "meine Rundungen sitzen an den richtigen Stellen",
+    services: ["69", "Badespaß", "Busenverkehr", "Deep Throat", "Devote Spiele", "Dildospiele", "Eierlecken", "Erotikmassage", "Fingerspiele", "Fisting bei Dir", "Franz. beidseitig", "Französisch", "Fusserotik", "GF6", "GV", "Gesichtsbesamung", "Körperbesamung", "Lesbospiele", "Natursekt (bei Dir)", "Natursekt (bei mir)", "Prostatamassage", "Zungenanal (bei Dir)", "Zungenanal (bei mir)", "Zungenküsse", "küssen und schmusen", "uvm. nach Absprache"],
+    img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=600"
+  },
+  {
+    id: 2, name: "Nancy", age: 33, origin: "Niederlande", height: "165 cm", bust: "80 D", hair: "Blond",
+    konfektion: "36", tattoos: "Nein", piercings: "Keine", intimrasur: "Rasiert",
+    languages: "",
+    anwesend: true,
+    quote: "lust auf Sex ich warte auf dich",
+    subquote: "suchst du leidenschaftlichen Service dann musst du zu mir kommen",
+    services: ["69", "Badespaß", "Busenverkehr", "Deep Throat", "Devote Spiele", "Dildospiele", "Dominante Spiele", "Eierlecken", "Erotikmassage", "FFM", "Fingerspiele", "Fisting bei Dir", "Franz. beidseitig", "Französisch", "Fusserotik", "GF6", "GV", "Körperbesamung", "MMF", "Natursekt (bei Dir)", "Natursekt (bei mir)", "Prostatamassage", "Zungenanal (bei mir)", "Zungenküsse", "küssen und schmusen", "uvm. nach Absprache"],
+    img: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=600"
+  },
+  {
+    id: 3, name: "Vienna", age: 50, origin: "Italien", height: "170 cm", bust: "95 D Natur", hair: "Blond rückenlang",
+    konfektion: "38/40", tattoos: null, piercings: null, intimrasur: "Rasiert",
+    languages: "Englisch, Englisch, Italienisch, Französisch, Spanisch, Portugiesisch und ein wenig Deutsch",
+    anwesend: true,
+    quote: "mein Service wird dich überzeugen",
+    subquote: "Ich bin einfach Naturgeil, das möchte ich auch ausleben.",
+    services: ["69", "Anal (bei Dir)", "Anal (bei mir)", "Arabische Küsse", "Badespaß", "Busenverkehr", "Devote Spiele", "Dildospiele", "Eierlecken", "Erotikmassage", "FFM", "Fingerspiele", "Fisting bei Dir", "Franz. beidseitig", "Französisch", "Fusserotik", "GF6", "GV", "Gesichtsbesamung", "Körperbesamung", "Prostatamassage", "Zungenanal (bei Dir)", "Zungenanal (bei mir)", "Zungenküsse", "küssen und schmusen", "uvm. nach Absprache"],
+    img: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&q=80&w=600"
+  },
+  {
+    id: 4, name: "Flor", age: 32, origin: "Brasilien", height: "165 cm", bust: "75 C", hair: "Schwarz kinnlang",
+    konfektion: "38", tattoos: "Nein", piercings: "Keine", intimrasur: "Rasiert",
+    languages: "",
+    anwesend: true,
+    quote: "Ich liebe den Sex und bin für vieles offen",
+    subquote: "du wirst mich nicht vergessen",
+    services: ["69", "Busenverkehr", "Deep Throat", "Dildospiele", "Eierlecken", "Erotikmassage", "FFM", "Fingerspiele", "Franz. beidseitig", "Französisch", "Fusserotik", "GF6", "GV", "Natursekt (bei Dir)", "Natursekt (bei mir)", "Zungenanal (bei mir)", "Zungenküsse", "küssen und schmusen", "uvm. nach Absprache"],
+    img: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&q=80&w=600"
+  },
+  {
+    id: 5, name: "Pamela", age: 35, origin: "Slowakei", height: "170 cm", bust: "85 F", hair: "Braun lang",
+    konfektion: "38", tattoos: null, piercings: null, intimrasur: "Rasiert",
+    languages: "",
+    anwesend: true,
+    quote: "ein Service Highlight erwartet dich",
+    subquote: "ich bin offen für fast alles bei mir erlebst du dein persönliches Highlight",
+    services: ["69", "Anal (bei Dir)", "Anal (bei mir)", "Arabische Küsse", "Badespaß", "Busenverkehr", "Deep Throat", "Dildospiele", "Dominante Spiele", "Eierlecken", "Erotikmassage", "FFM", "Fingerspiele", "Franz. beidseitig", "Französisch", "Fusserotik", "GF6", "GV", "Gesichtsbesamung", "Hausbesuche", "Körperbesamung", "Natursekt (bei Dir)", "Natursekt (bei mir)", "Prostatamassage", "Rollenspiele", "Zungenanal (bei Dir)", "Zungenanal (bei mir)", "Zungenküsse", "küssen und schmusen", "uvm. nach Absprache"],
+    img: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&q=80&w=600"
+  },
+  {
+    id: 6, name: "Michelle", age: 27, origin: "Spanien", height: "172 cm", bust: "85 C fest", hair: "Schwarz rückenlang",
+    konfektion: "38", tattoos: null, piercings: null, intimrasur: "Rasiert",
+    languages: "Deutsch",
+    anwesend: true,
+    quote: "Ich liebe die Männer und den Sex deshalb bin ich hier",
+    subquote: "",
+    services: ["69", "Badespaß", "Busenverkehr", "Dildospiele", "Eierlecken", "Erotikmassage", "FFM", "Fingerspiele", "Fisting bei Dir", "Franz. beidseitig", "Französisch", "Fusserotik", "GF6", "GV", "Körperbesamung", "Prostatamassage", "Rollenspiele", "Zungenanal (bei mir)", "Zungenküsse", "küssen und schmusen", "uvm. nach Absprache"],
+    img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=600"
+  },
+  {
+    id: 7, name: "Anays", age: 21, origin: "Italienisch", height: "175 cm", bust: "75 B", hair: "Blond lang",
+    konfektion: "38", tattoos: "Ja", piercings: null, intimrasur: "Rasiert",
+    languages: "",
+    anwesend: true,
+    quote: "leidenschaftlicher erotischer Sex erwartet dich bei mir",
+    subquote: "",
+    services: ["69", "Anal (bei Dir)", "Badespaß", "Busenverkehr", "Deep Throat", "Devote Spiele", "Dildospiele", "Dominante Spiele", "Erotikmassage", "Fisting bei Dir", "Franz. beidseitig", "Französisch", "Fusserotik", "GF6", "GV", "Gesichtsbesamung", "Körperbesamung", "Natursekt (bei Dir)", "Rollenspiele", "Zungenanal (bei mir)", "Zungenküsse", "küssen und schmusen", "uvm. nach Absprache"],
+    img: "https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?auto=format&fit=crop&q=80&w=600"
+  },
+  {
+    id: 8, name: "Sindy", age: 35, origin: "Ungarn", height: "170 cm", bust: "90 D", hair: "Dunkelbraun",
+    konfektion: "38", tattoos: null, piercings: null, intimrasur: "Rasiert",
+    languages: "",
+    anwesend: false,
+    anwesendAb: "Ab 01.04.",
+    quote: "zärtlich, sinnlich, liebevoll das bin ich",
+    subquote: "Ich erfülle dir liebevoll deine Wünsche, deinen Besuch bei mir wirst du sicher nicht vergessen.",
+    services: ["69", "Anal (bei Dir)", "Badespaß", "Busenverkehr", "Dildospiele", "Eierlecken", "Erotikmassage", "FFM", "Fingerspiele", "Fisting bei Dir", "Franz. beidseitig", "Französisch", "Fusserotik", "GF6", "GV", "Gesichtsbesamung", "Körperbesamung", "Lesbospiele", "MMF", "Natursekt (bei Dir)", "Prostatamassage", "Zungenanal (bei mir)", "Zungenküsse", "küssen und schmusen", "uvm. nach Absprache"],
+    img: "https://images.unsplash.com/photo-1517365830460-955ce3ccd263?auto=format&fit=crop&q=80&w=600"
+  }
+];
+
+/* ===== DAME DETAIL MODAL ===== */
+function DameModal({ dame, onClose }) {
+  const [imgIdx, setImgIdx] = useState(0);
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = ''; };
+  }, []);
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4" onClick={onClose}>
+      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
+      <div className="relative bg-[#1a1a1a] border border-[#333] rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto scrollbar-hide" onClick={e => e.stopPropagation()}>
+        <button onClick={onClose} className="absolute top-4 right-4 z-10 text-white/70 hover:text-white bg-black/50 rounded-full p-2">
+          <X size={20} />
+        </button>
+
+        <div className="relative h-80 sm:h-96 w-full">
+          <img src={dame.img} alt={dame.name} className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#1a1a1a] via-transparent to-transparent"></div>
+          <div className="absolute bottom-4 left-6">
+            <h2 className="text-4xl font-medium text-white drop-shadow-lg" style={{fontFamily:"'Playfair Display', serif"}}>{dame.name}</h2>
+            <p className="text-[#C5A059] font-medium mt-1">{dame.age} Jahre &bull; {dame.origin}</p>
+          </div>
+          {dame.anwesend ? (
+            <span className="absolute top-4 left-4 bg-green-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Anwesend</span>
+          ) : dame.anwesendAb ? (
+            <span className="absolute top-4 left-4 bg-yellow-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">{dame.anwesendAb}</span>
+          ) : null}
+        </div>
+
+        <div className="p-6">
+          <p className="text-gray-300 italic text-lg mb-2 leading-relaxed">"{dame.quote}"</p>
+          {dame.subquote && <p className="text-gray-400 text-sm mb-4">{dame.subquote}</p>}
+          {dame.languages && <p className="text-[#C5A059] text-sm mb-4">Sprachen: {dame.languages}</p>}
+
+          <div className="grid grid-cols-2 gap-3 mb-6 bg-[#111] rounded-lg p-4 border border-[#2a2a2a]">
+            <div className="flex justify-between"><span className="text-gray-500">Oberweite:</span><span className="text-white font-medium">{dame.bust}</span></div>
+            <div className="flex justify-between"><span className="text-gray-500">Größe:</span><span className="text-white font-medium">{dame.height}</span></div>
+            <div className="flex justify-between"><span className="text-gray-500">Haare:</span><span className="text-white font-medium">{dame.hair}</span></div>
+            <div className="flex justify-between"><span className="text-gray-500">Konfektion:</span><span className="text-white font-medium">{dame.konfektion}</span></div>
+            {dame.tattoos && <div className="flex justify-between"><span className="text-gray-500">Tattoos:</span><span className="text-white font-medium">{dame.tattoos}</span></div>}
+            {dame.piercings && <div className="flex justify-between"><span className="text-gray-500">Piercings:</span><span className="text-white font-medium">{dame.piercings}</span></div>}
+            <div className="flex justify-between"><span className="text-gray-500">Intimrasur:</span><span className="text-white font-medium">{dame.intimrasur}</span></div>
+          </div>
+
+          <div>
+            <p className="text-xs text-[#C5A059] font-semibold uppercase tracking-wider mb-3 border-b border-[#333] pb-2">Alle Services</p>
+            <div className="flex flex-wrap gap-2">
+              {dame.services.map((s, i) => (
+                <span key={i} className="bg-[#222] border border-[#333] text-gray-300 text-xs px-3 py-1.5 rounded-full">{s}</span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ===== MAIN APP ===== */
+function App() {
+  const [view, setView] = useState('landing');
+  const [selectedDame, setSelectedDame] = useState(null);
+  const [mobileMenu, setMobileMenu] = useState(false);
+
+  /* LANDING PAGE */
+  if (view === 'landing') {
+    return (
+      <div className="min-h-screen bg-[#111111] text-white flex flex-col items-center justify-center p-4 relative overflow-hidden" style={{fontFamily:"'Inter', sans-serif"}}>
+        <div className="absolute top-0 right-0 w-full h-full opacity-20 pointer-events-none"
+             style={{background: 'radial-gradient(circle at top right, #C5A059 0%, transparent 40%), radial-gradient(circle at bottom left, #C5A059 0%, transparent 40%)'}}></div>
+
+        <div className="z-10 w-full max-w-4xl flex flex-col items-center">
+          <div className="mb-10 text-center select-none">
+            <h1 className="text-[#C5A059] text-5xl md:text-6xl mb-[-10px]" style={{fontFamily:"'Great Vibes', cursive"}}>AH</h1>
+            <h2 className="text-[#C5A059] text-5xl md:text-7xl" style={{fontFamily:"'Playfair Display', serif", fontWeight:'700'}}>AmoreHaus</h2>
+          </div>
+
+          <div className="w-full h-64 md:h-96 relative mb-12 shadow-[0_0_30px_rgba(197,160,89,0.15)] overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1616050558117-640a24fdb231?auto=format&fit=crop&q=80&w=1200" alt="Atmosphere" className="w-full h-full object-cover opacity-60" />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#111111]"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-[#111111] via-transparent to-[#111111]"></div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-6 w-full max-w-xl justify-center mb-10">
+            <button onClick={() => setView('overview')} className="flex-1 bg-gradient-to-b from-[#8B0000] to-[#5c0000] text-white py-4 px-8 rounded border border-red-900 text-lg font-medium hover:brightness-110 transition-all shadow-[0_4px_15px_rgba(139,0,0,0.3)]">
+              EINTRETEN
+            </button>
+            <button onClick={() => window.location.href='https://google.com'} className="flex-1 bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-black py-4 px-8 rounded border border-[#C5A059] text-lg font-medium hover:brightness-105 transition-all shadow-[0_4px_15px_rgba(212,175,55,0.2)]">
+              VERLASSEN
+            </button>
+          </div>
+
+          <p className="text-gray-400 text-center text-sm md:text-base max-w-2xl mb-8 leading-relaxed">
+            Wenn Sie noch keine 18 Jahre alt sind oder keine erotischen Inhalte<br className="hidden md:block" />
+            sehen möchten, dann verlassen Sie bitte diese Internetseite.
+          </p>
+
+          <div className="border border-gray-600 px-4 py-1 flex items-center gap-2 opacity-60">
+            <span className="font-bold tracking-wider text-sm">JUS<span className="font-normal">PROG</span></span>
+            <span className="border-l border-gray-600 pl-2 text-sm font-bold">18</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  /* MAIN OVERVIEW */
+  return (
+    <div className="min-h-screen bg-[#161616] text-white" style={{fontFamily:"'Inter', sans-serif"}}>
+
+      {/* HEADER */}
+      <header className="border-b border-[#333] bg-[#1a1a1a] sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 lg:px-8">
+          <div className="flex justify-between items-center h-20">
+            <div className="flex items-center gap-3 cursor-pointer select-none" onClick={() => setView('landing')}>
+              <span className="text-[#C5A059] text-3xl" style={{fontFamily:"'Great Vibes', cursive"}}>AH</span>
+              <span className="text-xl md:text-2xl tracking-wide font-semibold" style={{fontFamily:"'Playfair Display', serif"}}>AmoreHaus</span>
+            </div>
+            <nav className="hidden md:flex items-center gap-8">
+              <a href="#" className="text-[#C5A059] font-medium border-b border-[#C5A059] pb-1">Home</a>
+              <a href="#" className="text-gray-300 hover:text-[#C5A059] transition-colors">Mieterinnen gesucht</a>
+              <a href="#" className="text-gray-300 hover:text-[#C5A059] transition-colors">Impressum</a>
+              <a href="#" className="text-gray-300 hover:text-[#C5A059] transition-colors">Datenschutzerklärung</a>
+            </nav>
+            <button className="md:hidden text-gray-300" onClick={() => setMobileMenu(!mobileMenu)}>
+              {mobileMenu ? <X size={28}/> : <Menu size={28}/>}
+            </button>
+          </div>
+        </div>
+        {/* MOBILE MENU */}
+        {mobileMenu && (
+          <div className="md:hidden border-t border-[#333] bg-[#1a1a1a] px-4 pb-4">
+            <a href="#" className="block py-3 text-[#C5A059] font-medium border-b border-[#222]">Home</a>
+            <a href="#" className="block py-3 text-gray-300 hover:text-[#C5A059] border-b border-[#222]">Mieterinnen gesucht</a>
+            <a href="#" className="block py-3 text-gray-300 hover:text-[#C5A059] border-b border-[#222]">Impressum</a>
+            <a href="#" className="block py-3 text-gray-300 hover:text-[#C5A059]">Datenschutzerklärung</a>
+          </div>
+        )}
+      </header>
+
+      <main className="max-w-7xl mx-auto px-4 lg:px-8 py-10">
+        {/* TITLE */}
+        <h1 className="text-4xl md:text-5xl text-center mb-2" style={{fontFamily:"'Playfair Display', serif"}}>Amorehaus</h1>
+        <p className="text-center text-[#C5A059] mb-12 uppercase tracking-widest text-sm font-semibold">Guter Service muss nicht teuer sein</p>
+
+        {/* INFO BAR */}
+        <div className="bg-[#1e1e1e] border border-[#333] rounded-lg p-6 mb-12 flex flex-col md:flex-row gap-8 justify-between items-start md:items-center shadow-[0_4px_20px_rgba(0,0,0,0.4)]">
+          <div className="flex items-start gap-4">
+            <MapPin className="text-[#C5A059] mt-1 flex-shrink-0" size={24} />
+            <div>
+              <p className="font-semibold text-lg">Steinlachwasen 2</p>
+              <p className="text-gray-400">72072 Tübingen-Derendingen</p>
+              <p className="text-sm text-[#C5A059] mt-1">Direkt an der B27 (Ausfahrt Bereich Süd)</p>
+            </div>
+          </div>
+          <div className="flex items-start gap-4">
+            <Phone className="text-[#C5A059] mt-1 flex-shrink-0" size={24} />
+            <div>
+              <p className="font-semibold text-lg">Kontakt</p>
+              <p className="text-gray-400">0162 - 8669170</p>
+              <p className="text-gray-400">0174 - 4226315</p>
+            </div>
+          </div>
+          <div className="flex items-start gap-4">
+            <Clock className="text-[#C5A059] mt-1 flex-shrink-0" size={24} />
+            <div>
+              <p className="font-semibold text-lg">Öffnungszeiten</p>
+              <p className="text-gray-400"><span className="text-gray-300 w-16 inline-block">SO - DO</span> 10:00 - 24:00 Uhr</p>
+              <p className="text-gray-400"><span className="text-gray-300 w-16 inline-block">FR + SA</span> 10:00 - 01:00 Uhr</p>
+            </div>
+          </div>
+        </div>
+
+        {/* EINGANG / WEGBESCHREIBUNG */}
+        <div className="flex flex-col lg:flex-row gap-8 mb-12 items-center bg-[#1a1a1a] p-6 rounded-lg border border-[#C5A059]/30 shadow-lg">
+          <div className="w-full lg:w-1/2 relative h-64 md:h-80 rounded-lg overflow-hidden border border-[#C5A059]/50 shadow-[0_0_15px_rgba(197,160,89,0.2)]">
+            <img src="https://images.unsplash.com/photo-1582282577239-2ce13e514112?auto=format&fit=crop&q=80&w=1200" alt="Eingang Amorehaus" className="w-full h-full object-cover brightness-75 hover:brightness-100 transition-all duration-500" />
+            <div className="absolute top-4 right-4 bg-[#8B0000] text-white px-4 py-2 font-bold text-lg border border-red-800 shadow-md rounded-sm">EINGANG 2</div>
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-6">
+              <h3 className="text-2xl font-semibold text-[#C5A059] drop-shadow-sm" style={{fontFamily:"'Playfair Display', serif"}}>Hier finden Sie uns</h3>
+            </div>
+          </div>
+          <div className="w-full lg:w-1/2 flex flex-col gap-4">
+            <div className="flex items-center gap-3 mb-2">
+              <ArrowRight className="text-[#C5A059]" size={28} />
+              <h2 className="text-2xl md:text-3xl font-medium" style={{fontFamily:"'Playfair Display', serif"}}>Ihr Weg zum Vergnügen</h2>
+            </div>
+            <p className="text-gray-300 text-lg leading-relaxed">Unser Haus befindet sich im Steinlachwasen 2 in Tübingen-Derendingen. Sie erreichen uns bequem über die B27, Ausfahrt Bereich Süd.</p>
+            <p className="text-gray-300 text-lg leading-relaxed">Folgen Sie einfach der Beschilderung vor Ort. Der diskrete <span className="text-[#C5A059] font-medium">Eingang 2</span> erwartet Sie.</p>
+            <a href="https://maps.google.com/?q=Steinlachwasen+2+72072+Tübingen" target="_blank" rel="noopener" className="self-start mt-4 flex items-center gap-2 bg-gradient-to-r from-[#C5A059] to-[#a3854a] text-black px-6 py-3 rounded font-semibold hover:brightness-110 transition-all shadow-md">
+              <MapPin size={18} /> Route planen
+            </a>
+          </div>
+        </div>
+
+        {/* SCHUTZ HINWEIS */}
+        <div className="flex items-center justify-center gap-3 mb-12 text-[#8B0000] bg-[#1a1111] py-4 rounded border border-[#331111] shadow-inner">
+          <ShieldCheck size={24} />
+          <span className="font-semibold tracking-wide uppercase text-lg">Grundsätzlich nur mit Schutz</span>
+        </div>
+
+        {/* DAMEN GRID */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {damenData.map((dame) => (
+            <div key={dame.id} className="bg-[#1e1e1e] rounded flex flex-col overflow-hidden border border-[#2a2a2a] hover:border-[#C5A059] transition-colors duration-300 group shadow-[0_4px_15px_rgba(0,0,0,0.3)]">
+              <div className="relative h-96 w-full overflow-hidden">
+                <img src={dame.img} alt={dame.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#1e1e1e] via-transparent to-transparent opacity-80"></div>
+                {dame.anwesend ? (
+                  <span className="absolute top-3 left-3 bg-green-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">Anwesend</span>
+                ) : dame.anwesendAb ? (
+                  <span className="absolute top-3 left-3 bg-yellow-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">{dame.anwesendAb}</span>
+                ) : null}
+                <div className="absolute bottom-4 left-4 right-4 text-white">
+                  <h3 className="text-3xl font-medium mb-1 drop-shadow-md" style={{fontFamily:"'Playfair Display', serif"}}>{dame.name}</h3>
+                  <p className="text-sm font-medium text-[#C5A059] drop-shadow-md">{dame.age} Jahre &bull; {dame.origin}</p>
+                </div>
+              </div>
+              <div className="p-5 flex flex-col flex-grow">
+                <p className="text-gray-300 text-sm italic mb-4 leading-relaxed line-clamp-2">"{dame.quote}"</p>
+                <div className="grid grid-cols-2 gap-y-2 mb-6 text-sm">
+                  <div className="text-gray-500">Oberweite:</div><div className="text-white text-right font-medium">{dame.bust}</div>
+                  <div className="text-gray-500">Größe:</div><div className="text-white text-right font-medium">{dame.height}</div>
+                  <div className="text-gray-500">Haare:</div><div className="text-white text-right font-medium truncate">{dame.hair}</div>
+                  <div className="text-gray-500">Konfektion:</div><div className="text-white text-right font-medium">{dame.konfektion}</div>
+                </div>
+                <div className="mb-6 flex-grow">
+                  <p className="text-xs text-[#C5A059] font-semibold uppercase tracking-wider mb-2 border-b border-[#333] pb-1">Services</p>
+                  <p className="text-sm text-gray-400 leading-snug">
+                    {dame.services.slice(0, 8).join(" \u2022 ")} {dame.services.length > 8 && "\u2022 uvm."}
+                  </p>
+                </div>
+                <button onClick={() => setSelectedDame(dame)} className="w-full bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37] text-black font-semibold py-3 rounded hover:brightness-110 transition-all shadow-md">
+                  Profil & Details
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* EROTIKMASSAGE SECTION */}
+        <div className="mt-16 bg-[#1a1a1a] border border-[#C5A059]/30 rounded-lg p-8 text-center shadow-lg">
+          <div className="flex justify-center mb-4">
+            <Sparkles className="text-[#C5A059]" size={32} />
+          </div>
+          <h2 className="text-3xl md:text-4xl mb-3" style={{fontFamily:"'Playfair Display', serif"}}>Erotikmassageliege</h2>
+          <p className="text-[#C5A059] text-lg font-medium mb-4">Massage Highlight für jeden Mann</p>
+          <p className="text-gray-400 max-w-xl mx-auto">Erleben Sie eine unvergessliche Erotikmassage auf unserer speziellen Massageliege. Lassen Sie sich von unseren erfahrenen Damen verwöhnen.</p>
+        </div>
+      </main>
+
+      {/* FOOTER */}
+      <footer className="border-t border-[#333] bg-[#111111] mt-20 py-12 px-4 lg:px-8">
+        <div className="max-w-4xl mx-auto text-center text-xs text-gray-500 leading-relaxed">
+          <p className="mb-4">
+            Die Damen, die in Tübingen ihre Liebes-Dienste anbieten, buchen ein freies Zimmer, ähnlich wie in einem Hotel. Diese Homepage ist lediglich eine Plattform für die selbstständig tätigen Damen, auf der sie sich und ihre Leistungen bewerben. Die Vereinbarung der Leistung und Preise, sowie deren Bezahlung erfolgt ausschließlich direkt mit den Damen in deren Namen und auf deren Rechnung.
+          </p>
+          <p className="mb-8">
+            Alle Servicewünsche bedarf der individuellen Absprache mit der Dame deiner Wahl. Alle hier arbeitenden Frauen unterliegen der Melde- und Steuerpflicht. Bei Mietvertragbeginn werden sie explizit darauf hingewiesen.
+          </p>
+          <div className="flex justify-center gap-6 mb-6 text-gray-400">
+            <a href="#" className="hover:text-[#C5A059] transition-colors">Home</a>
+            <a href="#" className="hover:text-[#C5A059] transition-colors">Mieterinnen gesucht</a>
+            <a href="#" className="hover:text-[#C5A059] transition-colors">Impressum</a>
+            <a href="#" className="hover:text-[#C5A059] transition-colors">Datenschutzerklärung</a>
+          </div>
+          <p>&copy; 2026 AmoreHaus. Alle Rechte vorbehalten.</p>
+        </div>
+      </footer>
+
+      {/* DAME DETAIL MODAL */}
+      {selectedDame && <DameModal dame={selectedDame} onClose={() => setSelectedDame(null)} />}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
